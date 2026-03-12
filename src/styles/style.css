@@ -133,3 +133,16 @@ input:disabled { background-color: #f0f0f0; color: #888; text-align: center; }
     min-height: 50px; /* Garante uma altura mínima */
     white-space: pre-wrap; /* Mantém as quebras de linha se houver */
 }
+
+input.conflito-codigo {
+    border-bottom: 2px solid #dc3545 !important;
+    color: #dc3545;
+}
+
+.error-text {
+    display: block;
+    color: #dc3545;
+    font-size: 11px;
+    margin-top: 4px;
+    min-height: 14px; 
+}

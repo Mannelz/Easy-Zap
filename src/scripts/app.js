@@ -75,6 +75,10 @@ function adicionarEventListeners() {
   document
     .getElementById("codigo")
     .addEventListener("input", preencherDadosCliente);
+  document
+    .getElementById("codigo")
+    .addEventListener("blur", verificarConflitoBlur);
+
   const campos = ["entregador", "empresa", "codigo", "nome", "mensagem"];
 
   campos.forEach((id) => {
@@ -100,45 +104,94 @@ function aplicarMascaraTelefone(elemento) {
   elemento.value = valor.substring(0, 10);
 }
 
-// --- LÓGICA DE DADOS DO CLIENTE ---
 function preencherDadosCliente(e) {
-  const codigo = e.target.value.toUpperCase();
-  const clientes = JSON.parse(localStorage.getItem(STORAGE_KEY_CLIENTES)) || {};
+  const inputValRaw = e.target.value.trim();
+  const codigoInput = document.getElementById("codigo");
 
-  if (codigo.length === 0) {
+  // Remove o alerta vermelho assim que o usuário volta a digitar
+  codigoInput.classList.remove("conflito-codigo");
+
+  if (inputValRaw.length === 0) {
     document.getElementById("nome").value = "";
     document.getElementById("numero").value = "";
     atualizarPreviewMensagem();
     return;
   }
 
-  const cliente = clientes[codigo];
+  const inputPadronizado = padronizarCodigo(inputValRaw);
+  const clientes = JSON.parse(localStorage.getItem(STORAGE_KEY_CLIENTES)) || {};
+  const chaves = Object.keys(clientes);
 
-  if (cliente) {
-    document.getElementById("nome").value = cliente.nome;
+  // Busca chaves que terminam com o valor digitado (ex: digitou "10" -> "010", acha "Y-010")
+  const matches = chaves.filter((k) => k.endsWith(inputPadronizado));
+
+  if (matches.length === 1) {
+    // Sucesso: Achou apenas 1. Auto-preenche!
+    document.getElementById("nome").value = clientes[matches[0]].nome;
     const numeroInput = document.getElementById("numero");
-    numeroInput.value = cliente.tel;
+    numeroInput.value = clientes[matches[0]].tel;
     aplicarMascaraTelefone(numeroInput);
-  } 
-  // else {
-  //   document.getElementById("nome").value = "";
-  //   document.getElementById("numero").value = "";
-  // }
+  } else {
+    // Conflito ou Novo: Apenas limpa e aguarda.
+    document.getElementById("nome").value = "";
+    document.getElementById("numero").value = "";
+  }
   atualizarPreviewMensagem();
 }
 
-function salvarDadosCliente() {
-  const codigo = document.getElementById("codigo").value.toUpperCase().trim();
-  const nome = document.getElementById("nome").value.trim();
-  const tel = document.getElementById("numero").value.replace(/\D/g, "");
+// --- LÓGICA DE DADOS DO CLIENTE ---
+// function preencherDadosCliente(e) {
+//   const codigo = e.target.value.toUpperCase();
+//   const clientes = JSON.parse(localStorage.getItem(STORAGE_KEY_CLIENTES)) || {};
 
-  if (codigo && nome && tel.length >= 8) {
-    const clientes =
-      JSON.parse(localStorage.getItem(STORAGE_KEY_CLIENTES)) || {};
-    clientes[codigo] = { nome, tel };
-    localStorage.setItem(STORAGE_KEY_CLIENTES, JSON.stringify(clientes));
-  }
+//   if (codigo.length === 0) {
+//     document.getElementById("nome").value = "";
+//     document.getElementById("numero").value = "";
+//     atualizarPreviewMensagem();
+//     return;
+//   }
+
+//   const cliente = clientes[codigo];
+
+//   if (cliente) {
+//     document.getElementById("nome").value = cliente.nome;
+//     const numeroInput = document.getElementById("numero");
+//     numeroInput.value = cliente.tel;
+//     aplicarMascaraTelefone(numeroInput);
+//   }
+//   // else {
+//   //   document.getElementById("nome").value = "";
+//   //   document.getElementById("numero").value = "";
+//   // }
+//   atualizarPreviewMensagem();
+// }
+
+function salvarDadosCliente() {
+    // Pega o código e força a padronização antes de salvar
+    const codigoRaw = document.getElementById("codigo").value.trim();
+    const codigo = padronizarCodigo(codigoRaw);
+    
+    const nome = document.getElementById("nome").value.trim();
+    const tel = document.getElementById("numero").value.replace(/\D/g, "");
+
+    if (codigo && nome && tel.length >= 8) {
+        const clientes = JSON.parse(localStorage.getItem(STORAGE_KEY_CLIENTES)) || {};
+        clientes[codigo] = { nome, tel };
+        localStorage.setItem(STORAGE_KEY_CLIENTES, JSON.stringify(clientes));
+    }
 }
+// function salvarDadosCliente() {
+//   const codigo = document.getElementById("codigo").value.toUpperCase().trim();
+//   const nome = document.getElementById("nome").value.trim();
+//   const tel = document.getElementById("numero").value.replace(/\D/g, "");
+
+//   if (codigo && nome && tel.length >= 8) {
+//     const clientes =
+//       JSON.parse(localStorage.getItem(STORAGE_KEY_CLIENTES)) || {};
+//     clientes[codigo] = { nome, tel };
+//     localStorage.setItem(STORAGE_KEY_CLIENTES, JSON.stringify(clientes));
+//   }
+// }
 
 function formatarTextoFinal(template) {
   const nome = document.getElementById("nome").value.trim() || "Cliente";
@@ -155,6 +208,26 @@ function formatarTextoFinal(template) {
     .replace(/{entregador}/g, entregador);
 }
 
+function verificarConflitoBlur(e) {
+    const inputValRaw = e.target.value.trim();
+    if (inputValRaw.length === 0) return;
+
+    // Atualiza o visual do input com os zeros à esquerda (ex: 10 vira 010)
+    const inputPadronizado = padronizarCodigo(inputValRaw);
+    e.target.value = inputPadronizado;
+
+    const clientes = JSON.parse(localStorage.getItem(STORAGE_KEY_CLIENTES)) || {};
+    const chaves = Object.keys(clientes);
+    const matches = chaves.filter(k => k.endsWith(inputPadronizado));
+
+    if (matches.length > 1) {
+        // Alerta Elegante: Falso positivo encontrado! Fica com borda vermelha.
+        e.target.classList.add("conflito-codigo");
+    } else if (matches.length === 1) {
+        // Se ele digitou só "010" e só existe "Y-010", ele corrige a letra automaticamente
+        e.target.value = matches[0];
+    }
+}
 // --- AÇÃO PRINCIPAL ---
 function enviarWhatsApp() {
   const ddd = document.getElementById("ddd").value.replace(/\D/g, "");
@@ -204,4 +277,9 @@ function limparHistoricoClientes() {
     );
     alert("Histórico de clientes apagado com sucesso!");
   }
+}
+
+function padronizarCodigo(codigo) {
+  if (!codigo) return "";
+  return codigo.toUpperCase().replace(/\d+/, (match) => match.padStart(3, "0"));
 }
