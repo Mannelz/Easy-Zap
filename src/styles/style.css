@@ -1,0 +1,135 @@
+:root {
+    --wa-green: #25D366;
+    --wa-dark: #128C7E;
+    --bg-color: #ECE5DD;
+    --text-dark: #333;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+
+body {
+    background-color: var(--bg-color);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 15px;
+    color: var(--text-dark);
+}
+
+.app-container {
+    background-color: #ffffff;
+    width: 100%;
+    max-width: 450px;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.app-header h2 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 22px;
+    color: var(--wa-dark);
+    margin: 0;
+    margin-bottom: 15px;
+}
+
+.form-row {
+    display: flex;
+    gap: 10px;
+}
+
+.client-data {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 15px 0;
+}
+
+.client-data legend {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--wa-dark);
+    padding: 0 8px;
+}
+
+.form-group { margin-bottom: 15px; }
+.form-group:last-child { margin-bottom: 0; }
+
+.half-width { flex: 1; }
+.codigo-group { width: 35%; }
+.nome-group { width: 65%; }
+
+
+label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #444;
+    white-space: nowrap; /* Impede que o label quebre a linha */
+}
+
+.phone-group { display: flex; gap: 8px; }
+
+input[type="text"], input[type="tel"], select {
+    width: 100%;
+    padding: 12px 10px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 15px;
+    outline: none;
+    transition: 0.3s;
+    background-color: #fafafa;
+}
+
+input:focus, select:focus {
+    border-color: var(--wa-green);
+    background-color: #fff;
+}
+
+input:disabled { background-color: #f0f0f0; color: #888; text-align: center; }
+
+#pais { width: 22%; }
+#ddd { width: 25%; text-align: center; font-weight: bold; }
+#numero { width: 53%; font-weight: bold; letter-spacing: 1px; }
+
+.hint { display: block; margin-top: 5px; font-size: 12px; color: #777; }
+
+.btn-enviar {
+    width: 100%; padding: 16px;
+    background-color: var(--wa-green); color: #fff;
+    border: none; border-radius: 10px;
+    font-size: 18px; font-weight: bold; cursor: pointer;
+    transition: 0.2s; margin-top: 10px;
+}
+.btn-enviar:active { transform: scale(0.98); background-color: var(--wa-dark); }
+
+.btn-limpar-hist {
+    background: none;
+    border: none;
+    color: var(--danger, #dc3545);
+    font-size: 12px;
+    text-decoration: underline;
+    cursor: pointer;
+    margin-top: 5px; /* Adiciona um pequeno espaço acima */
+    display: block;
+    width: 100%;
+    text-align: right;
+    padding: 5px 0;
+}
+.message-preview-box {
+    background-color: #f0f2f5; /* Cor de fundo semelhante ao WhatsApp */
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 8px;
+    font-size: 14px;
+    color: #333;
+    line-height: 1.5;
+    border: 1px solid #e0e0e0;
+    min-height: 50px; /* Garante uma altura mínima */
+    white-space: pre-wrap; /* Mantém as quebras de linha se houver */
+}

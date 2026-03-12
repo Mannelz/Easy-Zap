@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Zap Entregas</title>
+    <link rel="stylesheet" href="./styles/style.css">
+</head>
+
+<body>
+
+    <main class="app-container">
+        <header class="app-header">
+            <h2>
+                <img src="./assets/images/whatsapp-icon.svg" width="28" height="28" alt="WhatsApp">
+                Avisar Cliente
+            </h2>
+        </header>
+
+        <div class="form-row">
+            <div class="form-group half-width">
+                <label for="empresa">Empresa</label>
+                <select id="empresa">
+                    <option value="">...</option>
+                </select>
+            </div>
+            <div class="form-group half-width">
+                <label for="entregador">Seu Nome (Salva Auto)</label>
+                <input type="text" id="entregador" placeholder="Ex: Carlos" />
+            </div>
+        </div>
+
+        <fieldset class="client-data">
+            <legend>Dados do Destinatário</legend>
+            <div class="form-row">
+                <div class="form-group codigo-group">
+                    <label for="codigo">Código</label>
+                    <input type="text" id="codigo" placeholder="Buscar" />
+                </div>
+                <div class="form-group nome-group">
+                    <label for="nome">Nome Cliente</label>
+                    <input type="text" id="nome" placeholder="..." />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="numero">WhatsApp do Cliente</label>
+                <div class="phone-group">
+                    <input type="text" value="+55" id="pais" disabled />
+                    <input type="tel" id="ddd" maxlength="2" />
+                    <input type="tel" id="numero" placeholder="90000-0000" maxlength="10" />
+                </div>
+            </div>
+            <button type="button" class="btn-limpar-hist" onclick="limparHistoricoClientes()">
+                Limpar Histórico de Destinatários
+            </button>
+        </fieldset>
+
+        <div class="form-group">
+            <label for="mensagem">Mensagem Padrão</label>
+            <select id="mensagem">
+                <option value="">Carregando...</option>
+            </select>
+            <div id="messagePreview" class="message-preview-box">
+            </div>
+        </div>
+
+        <button class="btn-enviar" onclick="enviarWhatsApp()">
+            Enviar no WhatsApp ➔
+        </button>
+
+    </main>
+
+    <script src="./scripts/app.js"></script>
+</body>
+
+</html>
