@@ -1,0 +1,105 @@
+:root {
+    --wa-green: #25D366;
+    --wa-dark: #128C7E;
+    --bg-color: #ECE5DD;
+    --text-dark: #333;
+    --danger: #dc3545;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+
+body {
+    background-color: var(--bg-color);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 15px;
+    color: var(--text-dark);
+}
+
+.app-container {
+    background-color: #ffffff;
+    width: 100%;
+    max-width: 450px;
+    padding: 25px 20px;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+h2 {
+    text-align: center;
+    color: var(--wa-dark);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 22px;
+}
+
+.form-group { margin-bottom: 15px; }
+
+/* Divide os campos de Empresa e Código ao meio */
+.form-row {
+    display: flex;
+    gap: 10px;
+}
+.half-width { flex: 1; }
+
+label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #444;
+}
+
+.phone-group { display: flex; gap: 8px; }
+
+input[type="text"], input[type="tel"], select, textarea {
+    width: 100%;
+    padding: 12px 10px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 15px;
+    outline: none;
+    transition: 0.3s;
+    background-color: #fafafa;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: var(--wa-green);
+    background-color: #fff;
+}
+
+input:disabled { background-color: #f0f0f0; color: #888; text-align: center; }
+
+#pais { width: 22%; }
+#ddd { width: 25%; text-align: center; font-weight: bold; }
+#numero { width: 53%; font-weight: bold; letter-spacing: 1px; }
+
+textarea { resize: none; margin-bottom: 10px; }
+
+.checkbox-label {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; color: #555; cursor: pointer;
+}
+.checkbox-label input { width: 16px; height: 16px; accent-color: var(--wa-green); }
+
+.hint { display: block; margin-top: 5px; font-size: 12px; color: #777; }
+
+.btn-enviar {
+    width: 100%; padding: 16px;
+    background-color: var(--wa-green); color: #fff;
+    border: none; border-radius: 10px;
+    font-size: 18px; font-weight: bold; cursor: pointer;
+    transition: 0.2s; margin-top: 10px;
+}
+.btn-enviar:active { transform: scale(0.98); background-color: var(--wa-dark); }
+
+.btn-limpar {
+    background: none; border: none; color: var(--danger);
+    font-size: 12px; text-decoration: underline; cursor: pointer;
+    margin-top: 10px; display: block; width: 100%; text-align: right;
+}

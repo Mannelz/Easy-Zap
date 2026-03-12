@@ -1,0 +1,5 @@
+[
+    "Olá {nome}, o seu pedido da {empresa} já está a caminho!",
+    "Olá {nome}, o seu pedido da {empresa} (Cód: {codigo}) chegou ao destino e aguarda você vir buscar!",
+    "Oi {nome}! Sou entregador da {empresa}. Estou aqui na porta com o pacote {codigo}."
+]
