@@ -60,9 +60,8 @@ body {
 .form-group:last-child { margin-bottom: 0; }
 
 .half-width { flex: 1; }
-.codigo-group { width: 35%; }
-.nome-group { width: 65%; }
-
+.codigo-group {display: flex; gap: 3px; }
+.nome-group { width: 120%; } 
 
 label {
     display: block;
