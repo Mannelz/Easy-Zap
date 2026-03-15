@@ -67,12 +67,37 @@ function adicionarEventListeners() {
   document
     .getElementById("numero")
     .addEventListener("input", (e) => aplicarMascaraTelefone(e.target));
+
+  document
+    .getElementById("nome")
+    .addEventListener("blur", ajustaNomeCliente);
+
   document.getElementById("entregador").addEventListener("blur", (e) => {
     localStorage.setItem(STORAGE_KEY_ENTREGADOR, e.target.value.trim());
   });
 }
 
+function ajustaNomeCliente(e) {
+    let entrada = e.target.value;
+    if (entrada == "") return;
+    if(entrada.replace(/[^a-z,A-Z,\s]/g, "").length < 2 ){
+      e.target.value = ""
+      return
+    }
+    e.target.value = entrada.split(/\s/).map(capitalizeFirstLetter).join(" ");
+    atualizarPreviewMensagem()
+}
+
+function capitalizeFirstLetter(string) {
+  if (string.length === 0) {
+    return string; // Handle empty strings
+  }
+  return string.charAt(0).toUpperCase() + string.toLowerCase().slice(1);
+}
+
+
 function carregarDadosIniciais() {
+
   const selEmpresa = document.getElementById("empresa");
   selEmpresa.innerHTML = "";
   EMPRESAS_PADRAO.forEach((emp) => selEmpresa.add(new Option(emp, emp)));
@@ -225,11 +250,10 @@ function enviarWhatsApp() {
   const link = `https://wa.me/${telefone}?text=${encodeURIComponent(textoFinal)}`;
 
   window.open(link, "_blank");
-  if(confirm("A mensagem foi aberta em seu Whatsapp. Confirme se conseguiu envia-la?")){
-    salvarDadosCliente(); 
-    limpaFormDestinatario(limparCode=true);
-    document.getElementById("mensagem").selectedIndex = 0;
-  }
+
+  salvarDadosCliente(); 
+  limpaFormDestinatario(limparCode=true);
+  document.getElementById("mensagem").selectedIndex = 0;
 }
 
 function salvarDadosCliente() {
