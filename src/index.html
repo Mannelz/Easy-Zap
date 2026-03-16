@@ -34,9 +34,13 @@
         <fieldset class="client-data">
             <legend>Dados do Destinatário</legend>
             <div class="form-row">
-                <div class="form-group codigo-group">
-                    <label for="codigo">Código</label>
-                    <input type="text" id="codigo" placeholder="Buscar" />
+                <div class="form-group ">
+                    <label for="codigo">Código Pacote (X-999)</label>
+                    <div class="codigo-group">
+                        <input type="text" id="letras" placeholder="Letras"/> _ 
+                        <input type="text" id="codigo" placeholder="Números" />
+                        <span id="erro-codigo"></span>
+                    </div>
                 </div>
                 <div class="form-group nome-group">
                     <label for="nome">Nome Cliente</label>

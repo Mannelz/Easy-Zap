@@ -1,0 +1,4 @@
+node-modules/
+tmp/
+*.tmp
+*tmp.*

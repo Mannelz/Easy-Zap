@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Zap Entregas</title>
+    <link rel="stylesheet" href="./styles/style.css">
+</head>
+
+<body>
+
+    <main class="app-container">
+        <header class="app-header">
+            <h2>
+                <img src="./assets/images/whatsapp-icon.svg" width="28" height="28" alt="WhatsApp">
+                Avisar Cliente
+            </h2>
+        </header>
+
+        <div class="form-row">
+            <div class="form-group half-width">
+                <label for="empresa">Empresa</label>
+                <select id="empresa">
+                    <option value="">...</option>
+                </select>
+            </div>
+            <div class="form-group half-width">
+                <label for="entregador">Seu Nome (Salva Auto)</label>
+                <input type="text" id="entregador" placeholder="Ex: Carlos" />
+            </div>
+        </div>
+
+        <fieldset class="client-data">
+            <legend>Dados do Destinatário</legend>
+            <div class="form-row">
+                <div class="form-group codigo-group">
+                    <label for="codigo">Código</label>
+                    <input type="text" id="codigo" placeholder="Buscar" />
+                </div>
+                <div class="form-group nome-group">
+                    <label for="nome">Nome Cliente</label>
+                    <input type="text" id="nome" placeholder="..." />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="numero">WhatsApp do Cliente</label>
+                <div class="phone-group">
+                    <input type="text" value="+55" id="pais" disabled />
+                    <input type="tel" id="ddd" maxlength="2" />
+                    <input type="tel" id="numero" placeholder="90000-0000" maxlength="10" />
+                </div>
+            </div>
+            <button type="button" class="btn-limpar-hist" onclick="limparHistoricoClientes()">
+                Limpar Histórico de Destinatários
+            </button>
+        </fieldset>
+
+        <div class="form-group">
+            <label for="mensagem">Mensagem Padrão</label>
+            <select id="mensagem">
+                <option value="">Carregando...</option>
+            </select>
+            <div id="messagePreview" class="message-preview-box">
+            </div>
+        </div>
+
+        <button class="btn-enviar" onclick="enviarWhatsApp()">
+            Enviar no WhatsApp ➔
+        </button>
+
+    </main>
+
+    <script src="./scripts/app.js"></script>
+</body>
+
+</html>:root {
+    --wa-green: #25D366;
+    --wa-dark: #128C7E;
+    --bg-color: #ECE5DD;
+    --text-dark: #333;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+
+body {
+    background-color: var(--bg-color);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 15px;
+    color: var(--text-dark);
+}
+
+.app-container {
+    background-color: #ffffff;
+    width: 100%;
+    max-width: 450px;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.app-header h2 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 22px;
+    color: var(--wa-dark);
+    margin: 0;
+    margin-bottom: 15px;
+}
+
+.form-row {
+    display: flex;
+    gap: 10px;
+}
+
+.client-data {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 15px 0;
+}
+
+.client-data legend {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--wa-dark);
+    padding: 0 8px;
+}
+
+.form-group { margin-bottom: 15px; }
+.form-group:last-child { margin-bottom: 0; }
+
+.half-width { flex: 1; }
+.codigo-group { width: 35%; }
+.nome-group { width: 65%; }
+
+
+label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #444;
+    white-space: nowrap; /* Impede que o label quebre a linha */
+}
+
+.phone-group { display: flex; gap: 8px; }
+
+input[type="text"], input[type="tel"], select {
+    width: 100%;
+    padding: 12px 10px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 15px;
+    outline: none;
+    transition: 0.3s;
+    background-color: #fafafa;
+}
+
+input:focus, select:focus {
+    border-color: var(--wa-green);
+    background-color: #fff;
+}
+
+input:disabled { background-color: #f0f0f0; color: #888; text-align: center; }
+
+#pais { width: 22%; }
+#ddd { width: 25%; text-align: center; font-weight: bold; }
+#numero { width: 53%; font-weight: bold; letter-spacing: 1px; }
+
+.hint { display: block; margin-top: 5px; font-size: 12px; color: #777; }
+
+.btn-enviar {
+    width: 100%; padding: 16px;
+    background-color: var(--wa-green); color: #fff;
+    border: none; border-radius: 10px;
+    font-size: 18px; font-weight: bold; cursor: pointer;
+    transition: 0.2s; margin-top: 10px;
+}
+.btn-enviar:active { transform: scale(0.98); background-color: var(--wa-dark); }
+
+.btn-limpar-hist {
+    background: none;
+    border: none;
+    color: var(--danger, #dc3545);
+    font-size: 12px;
+    text-decoration: underline;
+    cursor: pointer;
+    margin-top: 5px; /* Adiciona um pequeno espaço acima */
+    display: block;
+    width: 100%;
+    text-align: right;
+    padding: 5px 0;
+}
+.message-preview-box {
+    background-color: #f0f2f5; /* Cor de fundo semelhante ao WhatsApp */
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 8px;
+    font-size: 14px;
+    color: #333;
+    line-height: 1.5;
+    border: 1px solid #e0e0e0;
+    min-height: 50px; /* Garante uma altura mínima */
+    white-space: pre-wrap; /* Mantém as quebras de linha se houver */
+}// --- CHAVES DO LOCALSTORAGE ---
+const STORAGE_KEY_CLIENTES = "zapApp_clientes_salvos";
+const STORAGE_KEY_ENTREGADOR = "zapApp_nome_entregador"; // Novo
+const DDD_PADRAO = "31";
+
+// --- DADOS EMBUTIDOS ---
+const EMPRESAS_PADRAO = [
+  "Mercado Livre",
+  "Shopee",
+  "Loggi",
+  "Amazon",
+  "Magalu",
+  "iFood",
+  "Outro",
+];
+const MENSAGENS_PADRAO = [
+  {
+    title: "Pedido a Caminho",
+    template:
+      "Olá {nome}! Sou {entregador}, da {empresa}. Seu pedido está a caminho!",
+  },
+  {
+    title: "Pedido Chegou (Aguardando Retirada)",
+    template:
+      "Oi {nome}, aqui é {entregador}. Seu pedido da {empresa} chegou e aguarda retirada.",
+  },
+  {
+    title: "Estou no Endereço",
+    template:
+      "Olá {nome}, sou {entregador}. Estou no seu endereço com a encomenda da {empresa}.",
+  },
+];
+
+// --- INICIALIZAÇÃO ---
+window.onload = () => {
+  definirDDDPadrao();
+  carregarDadosIniciais();
+  carregarEntregadorSalvo();
+  adicionarEventListeners();
+  atualizarPreviewMensagem();
+};
+
+function definirDDDPadrao() {
+  document.getElementById("ddd").value = DDD_PADRAO;
+}
+
+function carregarDadosIniciais() {
+  const selEmpresa = document.getElementById("empresa");
+  selEmpresa.innerHTML = "";
+  EMPRESAS_PADRAO.forEach((emp) => selEmpresa.add(new Option(emp, emp)));
+
+  const selMensagem = document.getElementById("mensagem");
+  selMensagem.innerHTML = "";
+  // ALTERADO: Agora usa 'msg.title' para o texto e 'msg.template' para o valor
+  MENSAGENS_PADRAO.forEach((msg) =>
+    selMensagem.add(new Option(msg.title, msg.template)),
+  );
+}
+
+function carregarEntregadorSalvo() {
+  const nome = localStorage.getItem(STORAGE_KEY_ENTREGADOR);
+  if (nome) {
+    document.getElementById("entregador").value = nome;
+  }
+}
+
+function atualizarPreviewMensagem() {
+  const template = document.getElementById("mensagem").value;
+  const textoFormatado = formatarTextoFinal(template);
+  document.getElementById("messagePreview").textContent = textoFormatado;
+}
+
+function adicionarEventListeners() {
+  // Lista de IDs dos campos que afetam o preview
+  document
+    .getElementById("codigo")
+    .addEventListener("input", preencherDadosCliente);
+  const campos = ["entregador", "empresa", "codigo", "nome", "mensagem"];
+
+  campos.forEach((id) => {
+    // 'change' para o select, 'input' para os outros
+    const evento = id === "mensagem" || id === "empresa" ? "change" : "input";
+    document
+      .getElementById(id)
+      .addEventListener(evento, atualizarPreviewMensagem);
+  });
+
+  // Event listeners que não afetam o preview diretamente
+  document
+    .getElementById("numero")
+    .addEventListener("input", (e) => aplicarMascaraTelefone(e.target));
+  document.getElementById("entregador").addEventListener("blur", (e) => {
+    localStorage.setItem(STORAGE_KEY_ENTREGADOR, e.target.value.trim());
+  });
+}
+
+function aplicarMascaraTelefone(elemento) {
+  let valor = elemento.value.replace(/\D/g, "");
+  valor = valor.replace(/^(\d{5})(\d)/, "$1-$2");
+  elemento.value = valor.substring(0, 10);
+}
+
+// --- LÓGICA DE DADOS DO CLIENTE ---
+function preencherDadosCliente(e) {
+  const codigo = e.target.value.toUpperCase();
+  const clientes = JSON.parse(localStorage.getItem(STORAGE_KEY_CLIENTES)) || {};
+
+  if (codigo.length === 0) {
+    document.getElementById("nome").value = "";
+    document.getElementById("numero").value = "";
+    atualizarPreviewMensagem();
+    return;
+  }
+
+  const cliente = clientes[codigo];
+
+  if (cliente) {
+    document.getElementById("nome").value = cliente.nome;
+    const numeroInput = document.getElementById("numero");
+    numeroInput.value = cliente.tel;
+    aplicarMascaraTelefone(numeroInput);
+  } 
+  // else {
+  //   document.getElementById("nome").value = "";
+  //   document.getElementById("numero").value = "";
+  // }
+  atualizarPreviewMensagem();
+}
+
+function salvarDadosCliente() {
+  const codigo = document.getElementById("codigo").value.toUpperCase().trim();
+  const nome = document.getElementById("nome").value.trim();
+  const tel = document.getElementById("numero").value.replace(/\D/g, "");
+
+  if (codigo && nome && tel.length >= 8) {
+    const clientes =
+      JSON.parse(localStorage.getItem(STORAGE_KEY_CLIENTES)) || {};
+    clientes[codigo] = { nome, tel };
+    localStorage.setItem(STORAGE_KEY_CLIENTES, JSON.stringify(clientes));
+  }
+}
+
+function formatarTextoFinal(template) {
+  const nome = document.getElementById("nome").value.trim() || "Cliente";
+  const empresa = document.getElementById("empresa").value;
+  const codigo =
+    document.getElementById("codigo").value.trim().toUpperCase() || "(sem cód)";
+  const entregador =
+    document.getElementById("entregador").value.trim() || "o entregador(a)";
+
+  return template
+    .replace(/{nome}/g, nome)
+    .replace(/{empresa}/g, empresa)
+    .replace(/{codigo}/g, codigo)
+    .replace(/{entregador}/g, entregador);
+}
+
+// --- AÇÃO PRINCIPAL ---
+function enviarWhatsApp() {
+  const ddd = document.getElementById("ddd").value.replace(/\D/g, "");
+  const numero = document.getElementById("numero").value.replace(/\D/g, "");
+  const nome = document.getElementById("nome").value.trim();
+  const codigo = document.getElementById("codigo").value.trim();
+  const entregador = document.getElementById("entregador").value.trim();
+
+  // Validação
+  if (!entregador) {
+    alert("Por favor, preencha o seu nome de entregador.");
+    return;
+  }
+  if (!codigo || !nome || ddd.length !== 2 || numero.length < 8) {
+    alert(
+      "Preencha todos os dados do destinatário: Código, Nome, DDD e Telefone válidos.",
+    );
+    return;
+  }
+
+  salvarDadosCliente();
+
+  const templateMensagem = document.getElementById("mensagem").value;
+  const textoFinal = formatarTextoFinal(templateMensagem);
+  const telefone = "55" + ddd + numero;
+  const link = `https://wa.me/${telefone}?text=${encodeURIComponent(textoFinal)}`;
+
+  window.open(link, "_blank");
+
+  // Limpeza para a próxima entrega
+  ["codigo", "nome", "numero"].forEach(
+    (id) => (document.getElementById(id).value = ""),
+  );
+  document.getElementById("mensagem").selectedIndex = 0;
+}
+
+function limparHistoricoClientes() {
+  if (
+    confirm(
+      "Tem certeza que deseja apagar todo o histórico de destinatários? Esta ação não pode ser desfeita.",
+    )
+  ) {
+    localStorage.removeItem(STORAGE_KEY_CLIENTES);
+    // Limpa os campos na tela para refletir a exclusão
+    ["codigo", "nome", "numero"].forEach(
+      (id) => (document.getElementById(id).value = ""),
+    );
+    alert("Histórico de clientes apagado com sucesso!");
+  }
+}

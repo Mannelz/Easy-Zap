@@ -60,9 +60,8 @@ body {
 .form-group:last-child { margin-bottom: 0; }
 
 .half-width { flex: 1; }
-.codigo-group { width: 35%; }
-.nome-group { width: 65%; }
-
+.codigo-group {display: flex; gap: 3px; }
+.nome-group { width: 120%; } 
 
 label {
     display: block;
@@ -132,4 +131,17 @@ input:disabled { background-color: #f0f0f0; color: #888; text-align: center; }
     border: 1px solid #e0e0e0;
     min-height: 50px; /* Garante uma altura mínima */
     white-space: pre-wrap; /* Mantém as quebras de linha se houver */
+}
+
+input.conflito-codigo {
+    border-bottom: 2px solid #dc3545 !important;
+    color: #dc3545;
+}
+
+.error-text {
+    display: block;
+    color: #dc3545;
+    font-size: 11px;
+    margin-top: 4px;
+    min-height: 14px; 
 }
