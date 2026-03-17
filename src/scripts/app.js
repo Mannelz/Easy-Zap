@@ -45,6 +45,7 @@ window.onload = () => {
   carregarDadosIniciais();
   definirDDDPadrao();
   carregarEntregadorSalvo();
+  carregarLetrasSalvo(); // CORREÇÃO: Faltava chamar esta função
   adicionarEventListeners();
   atualizarPreviewMensagem();
 };
@@ -74,6 +75,10 @@ function adicionarEventListeners() {
 
   document.getElementById("entregador").addEventListener("blur", (e) => {
     localStorage.setItem(STORAGE_KEY_ENTREGADOR, e.target.value.trim());
+  });
+
+  document.getElementById("letras").addEventListener("blur", (e) => {
+    localStorage.setItem(STORAGE_KEY_LETRA, e.target.value.trim().toUpperCase());
   });
 }
 
@@ -122,10 +127,8 @@ function carregarEntregadorSalvo() {
 }
 
 function carregarLetrasSalvo() {
-  const nome = localStorage.getItem(STORAGE_KEY_LETRA);
-  if (nome) {
-    document.getElementById("letras").value = nome;
-  }
+  const letra = localStorage.getItem(STORAGE_KEY_LETRA);
+  if (letra) document.getElementById("letras").value = letra;
 }
 
 function aplicarMascaraTelefone(elemento) {
@@ -164,8 +167,8 @@ function formataCodigo(e) {
 function buscarCliente() {
   limpaAlertaCodigoDuplicado();
   limpaFormDestinatario();
-  const codigoCompleto = padronizarCodigo();
-  if (codigoCompleto == "") return;
+  const codigoCompleto = padronizarCodigo(false); // false para não dar alert enquanto digita
+  if (codigoCompleto === "") return;
 
   const clientes = JSON.parse(localStorage.getItem(STORAGE_KEY_CLIENTES)) || {};
   const chaves = Object.keys(clientes);
@@ -174,7 +177,7 @@ function buscarCliente() {
   if (matches.length === 0) return null;
 
   if (matches.length > 1) {
-    alertaConflitoCodigp();
+    alertaConflitoCodigo(); // CORREÇÃO: Nome corrigido
     return null;
   }
   return clientes[matches[0]];
@@ -204,8 +207,8 @@ function msgSelecionada() {
 function limpaAlertaCodigoDuplicado() {
   const codigoInput = document.getElementById("codigo");
   codigoInput.classList.remove("conflito-codigo");
-  //el.classList.remove("conflito-codigo");
   const erro = document.getElementById("erro-codigo");
+  erro.classList.remove("error-text");
   erro.textContent = "";
 }
 
@@ -229,7 +232,7 @@ function enviarWhatsApp() {
   const ddd = document.getElementById("ddd").value.replace(/\D/g, "");
   const numero = document.getElementById("numero").value.replace(/\D/g, "");
   const nome = document.getElementById("nome").value.trim();
-  const codigo = padronizarCodigo();
+  const codigo = padronizarCodigo(true);
   const entregador = document.getElementById("entregador").value.trim();
 
   // Validação
@@ -238,9 +241,7 @@ function enviarWhatsApp() {
     return;
   }
   if (!codigo || !nome || ddd.length !== 2 || numero.length < 8) {
-    alert(
-      "Preencha todos os dados do destinatário: Código, Nome, DDD e Telefone válidos.",
-    );
+    alert("Preencha todos os dados do destinatário: Letra, Código, Nome, DDD e Telefone válidos.");
     return;
   }
 
@@ -252,14 +253,12 @@ function enviarWhatsApp() {
   window.open(link, "_blank");
 
   salvarDadosCliente(); 
-  limpaFormDestinatario(limparCode=true);
+  limpaFormDestinatario(true);
   document.getElementById("mensagem").selectedIndex = 0;
 }
 
 function salvarDadosCliente() {
-  // Pega o código e força a padronização antes de salvar
-  const codigo = padronizarCodigo();
-
+  const codigo = padronizarCodigo(false);
   const nome = document.getElementById("nome").value.trim();
   const tel = document.getElementById("numero").value.replace(/\D/g, "");
   const msgSelId = document.getElementById("mensagem").value;
@@ -274,43 +273,35 @@ function salvarDadosCliente() {
 }
 
 function limpaFormDestinatario(limparCode = false) {
-  let campos = limparCode? ["codigo","nome", "numero"] : ["nome", "numero"];
-  campos.forEach(
-    (id) => (document.getElementById(id).value = ""),
-  );
+  let campos = limparCode ?["codigo", "nome", "numero"] : ["nome", "numero"];
+  campos.forEach((id) => (document.getElementById(id).value = ""));
   atualizarPreviewMensagem();
 }
 
 function limparHistoricoClientes() {
-  if (
-    confirm(
-      "Tem certeza que deseja apagar todo o histórico de destinatários? Esta ação não pode ser desfeita.",
-    )
-  ) {
-    localStorage.removeItem(STORAGE_KEY_CLIENTES);
-    // Limpa os campos na tela para refletir a exclusão
-    ["codigo", "nome", "numero"].forEach(
-      (id) => (document.getElementById(id).value = ""),
-    );
+  if (confirm("Tem certeza que deseja apagar todo o histórico de destinatários? Esta ação não pode ser desfeita.")) {
+    localStorage.removeItem(STORAGE_KEY_CLIENTES);["codigo", "nome", "numero", "letras"].forEach((id) => (document.getElementById(id).value = ""));
     alert("Histórico de clientes apagado com sucesso!");
   }
 }
 
-function padronizarCodigo() {
+function padronizarCodigo(alertLetras=false) {
   let codigo = document.getElementById("codigo").value;
   if (!codigo) return "";
 
   let letra = document.getElementById("letras").value;
-  if (!letra || letra.length == 0) {
-    alert("Informe a Letra de sua Rota");
+  if (!letra || letra.trim().length === 0) {
+    if(alertLetras)alert("Informe a Letra de sua Rota");
     return;
   }
   return `${letra}-${codigo}`;
 }
 
-function alertaConflitoCodigp(e) {
-  //e.target.classList.add("conflito-codigo");
-  // const el = document.getElementById("erro-codigo") //.
-  // el.classList.add("error-text")
-  // el.textContent = "Múltiplos pacotes. Digite a letra da rota.";
+function alertaConflitoCodigo() {
+  const input = document.getElementById("codigo");
+  input.classList.add("conflito-codigo");
+  
+  const el = document.getElementById("erro-codigo");
+  el.classList.add("error-text");
+  el.textContent = "Múltiplos pacotes. Digite a letra da rota.";
 }
