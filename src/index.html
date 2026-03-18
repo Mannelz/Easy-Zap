@@ -60,13 +60,15 @@
             </button>
         </fieldset>
 
+        <div class="form-group mensagem-label-group">
+            <label for="mensagem">⚙️ Mensagem Padrão</label>
+            <button id="btn-editar-mensagem" type="button" class="btn-icon" aria-label="Abrir editor de mensagens">⚙️</button>
+        </div>
         <div class="form-group">
-            <label for="mensagem">Mensagem Padrão</label>
             <select id="mensagem">
                 <option value="">Carregando...</option>
             </select>
-            <div id="messagePreview" class="message-preview-box">
-            </div>
+            <div id="messagePreview" class="message-preview-box"></div>
         </div>
 
         <button class="btn-enviar" onclick="enviarWhatsApp()">
@@ -75,6 +77,28 @@
 
     </main>
 
+    <dialog id="modal-editor" class="dialog-editor">
+        <form method="dialog" id="form-editor">
+            <h3>Editar mensagem padrão</h3>
+
+            <div class="form-group">
+                <label for="modal-mensagem-seletor">Selecione a mensagem</label>
+                <select id="modal-mensagem-seletor"></select>
+            </div>
+
+            <div class="form-group">
+                <label for="modal-mensagem-template">Texto da mensagem</label>
+                <textarea id="modal-mensagem-template" rows="5"></textarea>
+            </div>
+
+            <menu>
+                <button id="btn-cancelar-editor" type="button">Cancelar</button>
+                <button id="btn-salvar-editor" type="button">Salvar</button>
+            </menu>
+        </form>
+    </dialog>
+
+    <script src="./scripts/components/editor_mensagens.js"></script>
     <script src="./scripts/app.js"></script>
 </body>
 

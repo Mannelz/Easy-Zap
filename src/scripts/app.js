@@ -86,6 +86,13 @@ function adicionarEventListeners() {
   document.getElementById("letras").addEventListener("blur", (e) => {
     localStorage.setItem(STORAGE_KEY_LETRA, e.target.value.trim().toUpperCase());
   });
+
+  const btnEditar = document.getElementById("btn-editar-mensagem");
+  if (btnEditar) btnEditar.addEventListener("click", abrirEditorMensagens);
+  const btnCancelar = document.getElementById("btn-cancelar-editor");
+  if (btnCancelar) btnCancelar.addEventListener("click", fecharEditorMensagens);
+  const btnSalvar = document.getElementById("btn-salvar-editor");
+  if (btnSalvar) btnSalvar.addEventListener("click", salvarEditorMensagens);
 }
 
 function ajustaNomeCliente(e) {
