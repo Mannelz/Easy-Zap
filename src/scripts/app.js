@@ -89,6 +89,14 @@ function adicionarEventListeners() {
 
   const btnEditar = document.getElementById("btn-editar-mensagem");
   if (btnEditar) btnEditar.addEventListener("click", abrirEditorMensagens);
+  const btnToggle = document.getElementById("btn-toggle-add-edit");
+  if (btnToggle) btnToggle.addEventListener("click", toggleModalMode);
+  const btnExcluir = document.getElementById("btn-excluir-mensagem");
+  if (btnExcluir) btnExcluir.addEventListener("click", excluirMensagemSelecionada);
+  const btnLimpar = document.getElementById("btn-limpar-personalizadas");
+  if (btnLimpar) btnLimpar.addEventListener("click", limparMensagensPersonalizadas);
+  const btnRecarregar = document.getElementById("btn-recarregar-defaults");
+  if (btnRecarregar) btnRecarregar.addEventListener("click", recarregarMensagensPadrao);
   const btnCancelar = document.getElementById("btn-cancelar-editor");
   if (btnCancelar) btnCancelar.addEventListener("click", fecharEditorMensagens);
   const btnSalvar = document.getElementById("btn-salvar-editor");
@@ -122,6 +130,13 @@ function carregarDadosIniciais() {
   const selMensagem = document.getElementById("mensagem");
   selMensagem.innerHTML = "";
   mensagensPadrao.forEach((msg) => selMensagem.add(new Option(msg.title, msg.id)));
+}
+
+async function restaurarMensagensPadrao() {
+  localStorage.removeItem(STORAGE_KEY_MENSAGENS);
+  mensagensPadrao = await carregarMensagens();
+  carregarDadosIniciais();
+  atualizarPreviewMensagem();
 }
 
 function msgSelecionada() {

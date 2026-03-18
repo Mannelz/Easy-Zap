@@ -1,4 +1,8 @@
 :root {
+    --bg-danger: #f31;
+    --bg-danger-dark: rgb(177, 35, 10);
+    --bg-alert: #d8cc25;
+    --bg-alert-dark: #8c8012;
     --wa-green: #25D366;
     --wa-dark: #128C7E;
     --bg-color: #ECE5DD;
@@ -92,6 +96,41 @@ body {
     border-color: var(--wa-green);
     color: var(--wa-dark);
 }
+
+.placeholder-button {
+    background: #f9f9f9;
+    border: 1px solid #d0d0d0;
+    border-radius: 8px;
+    color: #555;
+    padding: 6px 12px;
+    min-width: 75px;
+    text-align: center;
+    font-size: 12px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.placeholder-button:hover {
+    background: #fff;
+    border-color: var(--wa-green);
+    color: var(--wa-dark);
+}
+
+.modal-header-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.modal-label {
+    white-space: nowrap;
+    font-weight: 600;
+}
+
+#modal-titulo-group,
+#modal-seletor-group {
+    width: 100%;
+}
+
 
 .half-width { flex: 1; }
 .codigo-group {display: flex; gap: 3px; }
@@ -187,7 +226,7 @@ input.conflito-codigo {
     padding: 18px;
     background-color: #fff;
     box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-    margin: 40px auto 0 auto;
+    margin: 5% auto 0 auto;
     position: relative;
 }
 
@@ -198,7 +237,7 @@ dialog::backdrop {
 .dialog-editor #form-editor {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
 }
 
 .dialog-editor h3 {
@@ -239,6 +278,54 @@ dialog::backdrop {
     margin-top: 8px;
 }
 
+.placeholder-container {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+}
+
+.placeholder-button {
+    margin-top: 2px;
+    padding: 8px 12px;
+    min-width: 80px;
+    text-align: center;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    background-color: #fafafa;
+    cursor: pointer;
+    transition: 0.2s;
+    font-size: 12px;
+}
+
+.placeholder-button:hover {
+    border-color: var(--wa-dark);
+    background-color: #fff;
+}
+
+.btn-secondary {
+    padding: 8px 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background: #fff;
+    color: #444;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-secondary:hover {
+    border-color: var(--wa-green);
+    color: var(--wa-dark);
+}
+
+
+.editor-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
 .dialog-editor button {
     padding: 10px 14px;
     border: 1px solid #e0e0e0;
@@ -252,6 +339,23 @@ dialog::backdrop {
 .dialog-editor button:hover {
     border-color: var(--wa-green);
     color: var(--wa-dark);
+}
+
+.dialog-editor .btn-alterar {
+    background: var(--bg-alert);
+    color: #fff;
+}
+
+.dialog-editor .btn-alterar:hover {
+    border-color: var(--bg-alert-dark);
+}
+.dialog-editor .btn-excluir {
+    background: var(--bg-danger);
+    color: #fff;
+}
+
+.dialog-editor .btn-excluir:hover {
+    border-color: var(--bg-danger-dark);
 }
 
 .dialog-editor #btn-salvar-editor {

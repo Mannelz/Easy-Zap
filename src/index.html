@@ -61,7 +61,7 @@
         </fieldset>
 
         <div class="form-group mensagem-label-group">
-            <label for="mensagem">⚙️ Mensagem Padrão</label>
+            <label for="mensagem">Mensagem Padrão</label>
             <button id="btn-editar-mensagem" type="button" class="btn-icon" aria-label="Abrir editor de mensagens">⚙️</button>
         </div>
         <div class="form-group">
@@ -81,14 +81,29 @@
         <form method="dialog" id="form-editor">
             <h3>Editar mensagem padrão</h3>
 
-            <div class="form-group">
+            <div class="form-group modal-header-group">
+                <label for="btn-toggle-add-edit" class="modal-label">Modo</label>
+                <button id="btn-toggle-add-edit" type="button" class="btn-icon" aria-label="Alternar modo Adicionar/Editar">✎</button>
+            </div>
+            <div class="form-group" id="modal-seletor-group">
                 <label for="modal-mensagem-seletor">Selecione a mensagem</label>
                 <select id="modal-mensagem-seletor"></select>
             </div>
 
+            <div class="form-group" id="modal-titulo-group">
+                <label for="modal-mensagem-titulo">Título da mensagem</label>
+                <input type="text" id="modal-mensagem-titulo" placeholder="Digite um título para esta mensagem" />
+            </div>
             <div class="form-group">
                 <label for="modal-mensagem-template">Texto da mensagem</label>
-                <textarea id="modal-mensagem-template" rows="5"></textarea>
+                <textarea id="modal-mensagem-template" rows="4"></textarea>
+                <div id="placeholder-buttons" class="placeholder-container"></div>
+            </div>
+
+            <div class="form-group editor-actions">
+                <button id="btn-excluir-mensagem" type="button" class="btn-excluir">🗑️</button>
+                <button id="btn-limpar-personalizadas" type="button" class="btn-alterar">Limpar personalizadas</button>
+                <button id="btn-recarregar-defaults" type="button" class="btn-alterar">Recarregar padrões</button>
             </div>
 
             <menu>
