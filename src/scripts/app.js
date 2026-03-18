@@ -1,7 +1,8 @@
 // --- CHAVES DO LOCALSTORAGE ---
 const STORAGE_KEY_CLIENTES = "zapApp_clientes_salvos";
-const STORAGE_KEY_ENTREGADOR = "zapApp_nome_entregador"; // Novo
-const STORAGE_KEY_LETRA = "zapApp_letra_codigo"; // Novo
+const STORAGE_KEY_ENTREGADOR = "zapApp_nome_entregador";
+const STORAGE_KEY_LETRA = "zapApp_letra_codigo";
+const STORAGE_KEY_MENSAGENS = "zapApp_mensagens";
 const DDD_PADRAO = "31";
 const MAX_LEN_NUM_COD = 4;
 // --- DADOS EMBUTIDOS ---
@@ -14,41 +15,46 @@ const EMPRESAS_PADRAO = [
   "iFood",
   "Outro",
 ];
-const MENSAGENS_PADRAO = [
-  {
-    id: 1,
-    title: "Encomenda a Caminho",
-    template:
-      "Olá {nome}! Sou {entregador}, da {empresa}. Seu pedido está a caminho!",
-  },
-  {
-    id: 2,
-    title: "Estou no Endereço",
-    template:
-      "Olá {nome}, sou {entregador}. Estou no seu endereço com a encomenda da {empresa}.",
-  },
-  {
-    id: 3,
-    title: "Pedido Chegou (Aguardando Retirada)",
-    template: "Oi {nome}, aqui é {entregador}. Seu pedido da {empresa} chegou.",
-  },
-  {
-    id: 4,
-    title: "Niguem em Casa (Retornar)",
-    template:
-      "{nome}, aqui é {entregador}.Não encontramos ninguém no endereço, devo permanecer no bairro pela proxima hora.",
-  },
-];
+let mensagensPadrao = [];
 
 // --- INICIALIZAÇÃO ---
-window.onload = () => {
+window.onload = async () => {
+  await inicializarApp();
+};
+
+async function inicializarApp() {
+  mensagensPadrao = await carregarMensagens();
   carregarDadosIniciais();
   definirDDDPadrao();
   carregarEntregadorSalvo();
-  carregarLetrasSalvo(); // CORREÇÃO: Faltava chamar esta função
+  carregarLetrasSalvo();
   adicionarEventListeners();
   atualizarPreviewMensagem();
-};
+}
+
+async function carregarMensagens() {
+  const item = localStorage.getItem(STORAGE_KEY_MENSAGENS);
+  if (item) {
+    try {
+      return JSON.parse(item);
+    } catch (err) {
+      console.warn("zapApp: localStorage mensagens inválido, recarregando do JSON", err);
+      localStorage.removeItem(STORAGE_KEY_MENSAGENS);
+    }
+  }
+
+  try {
+    const response = await fetch("./assets/data/mensagens.json");
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const body = await response.json();
+    const lista = body.mensagens_padrao || [];
+    localStorage.setItem(STORAGE_KEY_MENSAGENS, JSON.stringify(lista));
+    return lista;
+  } catch (error) {
+    console.error("zapApp: falha ao carregar mensagens JSON", error);
+    return [];
+  }
+}
 
 function adicionarEventListeners() {
   // Lista de IDs dos campos que afetam o preview
@@ -102,17 +108,22 @@ function capitalizeFirstLetter(string) {
 
 
 function carregarDadosIniciais() {
-
   const selEmpresa = document.getElementById("empresa");
   selEmpresa.innerHTML = "";
   EMPRESAS_PADRAO.forEach((emp) => selEmpresa.add(new Option(emp, emp)));
 
   const selMensagem = document.getElementById("mensagem");
   selMensagem.innerHTML = "";
-  // ALTERADO: Agora usa 'msg.title' para o texto e 'msg.template' para o valor
-  MENSAGENS_PADRAO.forEach((msg) =>
-    selMensagem.add(new Option(msg.title, msg.id)),
-  );
+  mensagensPadrao.forEach((msg) => selMensagem.add(new Option(msg.title, msg.id)));
+}
+
+function msgSelecionada() {
+  const msgSelId = document.getElementById("mensagem").value;
+  let template = mensagensPadrao.find((m) => m.id == msgSelId)?.template;
+  if (!template && mensagensPadrao.length > 0) {
+    template = mensagensPadrao[0].template;
+  }
+  return template || "";
 }
 
 function definirDDDPadrao() {
@@ -196,12 +207,6 @@ function atualizarPreviewMensagem() {
   let template = msgSelecionada();
   const textoFormatado = formatarTextoFinal(template);
   document.getElementById("messagePreview").textContent = textoFormatado;
-}
-
-function msgSelecionada() {
-  const msgSelId = document.getElementById("mensagem").value;
-  let template = MENSAGENS_PADRAO.find(m => m.id == msgSelId)?.template;
-  return template;
 }
 
 function limpaAlertaCodigoDuplicado() {

@@ -1,5 +1,24 @@
-[
-    "Olá {nome}, o seu pedido da {empresa} já está a caminho!",
-    "Olá {nome}, o seu pedido da {empresa} (Cód: {codigo}) chegou ao destino e aguarda você vir buscar!",
-    "Oi {nome}! Sou entregador da {empresa}. Estou aqui na porta com o pacote {codigo}."
-]
+{
+  "mensagens_padrao": [
+    {
+      "id": 1,
+      "title": "Encomenda a Caminho",
+      "template": "Olá {nome}! Sou {entregador}, da {empresa}. Seu pedido está a caminho!"
+    },
+    {
+      "id": 2,
+      "title": "Estou no Endereço",
+      "template": "Olá {nome}, sou {entregador}. Estou no seu endereço com a encomenda da {empresa}."
+    },
+    {
+      "id": 3,
+      "title": "Pedido Chegou (Aguardando Retirada)",
+      "template": "Oi {nome}, aqui é {entregador}. Seu pedido da {empresa} chegou."
+    },
+    {
+      "id": 4,
+      "title": "Niguem em Casa (Retornar)",
+      "template": "{nome}, aqui é {entregador}.Não encontramos ninguém no endereço, devo permanecer no bairro pela proxima hora."
+    }
+  ]
+}
