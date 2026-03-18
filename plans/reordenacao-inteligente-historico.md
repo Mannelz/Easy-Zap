@@ -13,6 +13,7 @@ Mapear quais mensagens já foram enviadas para um determinado cliente (código d
    - Se já existir, fazer o `.push()` do novo `msgSelId` no array `msgEnviadas` existente, garantindo que não haja duplicatas (usar `Set` ou `.includes()`).
 
 2. **Criar função de Reordenação (`reordenarSelectMensagens(clienteId)`):**
+   - clienteId - O cliente (destinatario) é identificado pelo código do pacote
    - Obter o cliente atual do `localStorage` a partir da junção da `letra` e `codigo`.
    - Se o cliente existir e possuir o array `msgEnviadas`:
      - Pegar todas as mensagens base (`zapApp_mensagens`).

@@ -53,3 +53,8 @@ flowchart TD
 ## Features Futuras (Roadmap)
 1. **Edição de Mensagens**: Carregar `mensagens.json` via `fetch`, permitir edição em modal e salvar no `localStorage`.
 2. **Reordenação Inteligente do Select**: Cruzar o array `msgEnviadas` salvo no cliente com a lista de options. Mensagens já enviadas vão para o fim da lista e o app seleciona o próximo ID lógico automaticamente.
+
+## Restriçoes 
+- **IMPORTANTE** **NAO** execute comandos git
+- **NAO** inclua comentarios desnecessarios no código 
+- **USE** nomes claros e objetivos em classes, funcoes, variaveis, etc;

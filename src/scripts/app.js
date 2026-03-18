@@ -25,6 +25,7 @@ window.onload = async () => {
 async function inicializarApp() {
   mensagensPadrao = await carregarMensagens();
   carregarDadosIniciais();
+  reordenarSelectMensagens();
   definirDDDPadrao();
   carregarEntregadorSalvo();
   carregarLetrasSalvo();
@@ -222,7 +223,39 @@ function preencherDadosCliente(cliente) {
   const numeroInput = document.getElementById("numero");
   numeroInput.value = cliente.tel;
   aplicarMascaraTelefone(numeroInput);
+
+  const codigo = padronizarCodigo(false);
+  reordenarSelectMensagens(codigo, cliente.msgEnviadas || []);
+
   atualizarPreviewMensagem();
+}
+
+function reordenarSelectMensagens(codigoCompleto, msgEnviadas = []) {
+  const selMensagem = document.getElementById("mensagem");
+  if (!selMensagem) return;
+
+  const enviadosSet = new Set(msgEnviadas.map(String));
+
+  const pendentes = mensagensPadrao.filter((m) => !enviadosSet.has(String(m.id)));
+  const enviadas = mensagensPadrao.filter((m) => enviadosSet.has(String(m.id)));
+
+  selMensagem.innerHTML = "";
+
+  pendentes.forEach((m) => {
+    selMensagem.add(new Option(m.title, m.id));
+  });
+
+  enviadas.forEach((m) => {
+    selMensagem.add(new Option(`✅ [Enviada] ${m.title}`, m.id));
+  });
+
+  if (pendentes.length > 0) {
+    selMensagem.selectedIndex = 0;
+  } else if (enviadas.length > 0) {
+    selMensagem.selectedIndex = 0;
+  }
+
+  selMensagem.dispatchEvent(new Event("change"));
 }
 
 function atualizarPreviewMensagem() {
@@ -289,12 +322,23 @@ function salvarDadosCliente() {
   const nome = document.getElementById("nome").value.trim();
   const tel = document.getElementById("numero").value.replace(/\D/g, "");
   const msgSelId = document.getElementById("mensagem").value;
-  let msgEnviadas = [msgSelId];
-  
+
   if (codigo && nome && tel.length >= 8) {
-    const clientes =
-      JSON.parse(localStorage.getItem(STORAGE_KEY_CLIENTES)) || {};
-    clientes[codigo] = { nome, tel, msgEnviadas };
+    const clientes = JSON.parse(localStorage.getItem(STORAGE_KEY_CLIENTES)) || {};
+    const clienteAtual = clientes[codigo] || { nome, tel, msgEnviadas: [] };
+
+    clienteAtual.nome = nome;
+    clienteAtual.tel = tel;
+
+    if (!Array.isArray(clienteAtual.msgEnviadas)) {
+      clienteAtual.msgEnviadas = [];
+    }
+
+    if (!clienteAtual.msgEnviadas.includes(msgSelId)) {
+      clienteAtual.msgEnviadas.push(msgSelId);
+    }
+
+    clientes[codigo] = clienteAtual;
     localStorage.setItem(STORAGE_KEY_CLIENTES, JSON.stringify(clientes));
   }
 }
@@ -302,12 +346,17 @@ function salvarDadosCliente() {
 function limpaFormDestinatario(limparCode = false) {
   let campos = limparCode ?["codigo", "nome", "numero"] : ["nome", "numero"];
   campos.forEach((id) => (document.getElementById(id).value = ""));
+
+  reordenarSelectMensagens();
   atualizarPreviewMensagem();
 }
 
 function limparHistoricoClientes() {
   if (confirm("Tem certeza que deseja apagar todo o histórico de destinatários? Esta ação não pode ser desfeita.")) {
-    localStorage.removeItem(STORAGE_KEY_CLIENTES);["codigo", "nome", "numero", "letras"].forEach((id) => (document.getElementById(id).value = ""));
+    localStorage.removeItem(STORAGE_KEY_CLIENTES);
+    ["codigo", "nome", "numero", "letras"].forEach((id) => (document.getElementById(id).value = ""));
+    reordenarSelectMensagens();
+    atualizarPreviewMensagem();
     alert("Histórico de clientes apagado com sucesso!");
   }
 }
