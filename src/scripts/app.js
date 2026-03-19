@@ -1,7 +1,8 @@
 // --- CHAVES DO LOCALSTORAGE ---
 const STORAGE_KEY_CLIENTES = "zapApp_clientes_salvos";
-const STORAGE_KEY_ENTREGADOR = "zapApp_nome_entregador"; // Novo
-const STORAGE_KEY_LETRA = "zapApp_letra_codigo"; // Novo
+const STORAGE_KEY_ENTREGADOR = "zapApp_nome_entregador";
+const STORAGE_KEY_LETRA = "zapApp_letra_codigo";
+const STORAGE_KEY_MENSAGENS = "zapApp_mensagens";
 const DDD_PADRAO = "31";
 const MAX_LEN_NUM_COD = 4;
 // --- DADOS EMBUTIDOS ---
@@ -14,40 +15,47 @@ const EMPRESAS_PADRAO = [
   "iFood",
   "Outro",
 ];
-const MENSAGENS_PADRAO = [
-  {
-    id: 1,
-    title: "Encomenda a Caminho",
-    template:
-      "Olá {nome}! Sou {entregador}, da {empresa}. Seu pedido está a caminho!",
-  },
-  {
-    id: 2,
-    title: "Estou no Endereço",
-    template:
-      "Olá {nome}, sou {entregador}. Estou no seu endereço com a encomenda da {empresa}.",
-  },
-  {
-    id: 3,
-    title: "Pedido Chegou (Aguardando Retirada)",
-    template: "Oi {nome}, aqui é {entregador}. Seu pedido da {empresa} chegou.",
-  },
-  {
-    id: 4,
-    title: "Niguem em Casa (Retornar)",
-    template:
-      "{nome}, aqui é {entregador}.Não encontramos ninguém no endereço, devo permanecer no bairro pela proxima hora.",
-  },
-];
+let mensagensPadrao = [];
 
 // --- INICIALIZAÇÃO ---
-window.onload = () => {
+window.onload = async () => {
+  await inicializarApp();
+};
+
+async function inicializarApp() {
+  mensagensPadrao = await carregarMensagens();
   carregarDadosIniciais();
+  reordenarSelectMensagens();
   definirDDDPadrao();
   carregarEntregadorSalvo();
+  carregarLetrasSalvo();
   adicionarEventListeners();
   atualizarPreviewMensagem();
-};
+}
+
+async function carregarMensagens() {
+  const item = localStorage.getItem(STORAGE_KEY_MENSAGENS);
+  if (item) {
+    try {
+      return JSON.parse(item);
+    } catch (err) {
+      console.warn("zapApp: localStorage mensagens inválido, recarregando do JSON", err);
+      localStorage.removeItem(STORAGE_KEY_MENSAGENS);
+    }
+  }
+
+  try {
+    const response = await fetch("./assets/data/mensagens.json");
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const body = await response.json();
+    const lista = body.mensagens_padrao || [];
+    localStorage.setItem(STORAGE_KEY_MENSAGENS, JSON.stringify(lista));
+    return lista;
+  } catch (error) {
+    console.error("zapApp: falha ao carregar mensagens JSON", error);
+    return [];
+  }
+}
 
 function adicionarEventListeners() {
   // Lista de IDs dos campos que afetam o preview
@@ -75,6 +83,25 @@ function adicionarEventListeners() {
   document.getElementById("entregador").addEventListener("blur", (e) => {
     localStorage.setItem(STORAGE_KEY_ENTREGADOR, e.target.value.trim());
   });
+
+  document.getElementById("letras").addEventListener("blur", (e) => {
+    localStorage.setItem(STORAGE_KEY_LETRA, e.target.value.trim().toUpperCase());
+  });
+
+  const btnEditar = document.getElementById("btn-editar-mensagem");
+  if (btnEditar) btnEditar.addEventListener("click", abrirEditorMensagens);
+  const btnToggle = document.getElementById("btn-toggle-add-edit");
+  if (btnToggle) btnToggle.addEventListener("click", toggleModalMode);
+  const btnExcluir = document.getElementById("btn-excluir-mensagem");
+  if (btnExcluir) btnExcluir.addEventListener("click", excluirMensagemSelecionada);
+  const btnLimpar = document.getElementById("btn-limpar-personalizadas");
+  if (btnLimpar) btnLimpar.addEventListener("click", limparMensagensPersonalizadas);
+  const btnRecarregar = document.getElementById("btn-recarregar-defaults");
+  if (btnRecarregar) btnRecarregar.addEventListener("click", recarregarMensagensPadrao);
+  const btnCancelar = document.getElementById("btn-cancelar-editor");
+  if (btnCancelar) btnCancelar.addEventListener("click", fecharEditorMensagens);
+  const btnSalvar = document.getElementById("btn-salvar-editor");
+  if (btnSalvar) btnSalvar.addEventListener("click", salvarEditorMensagens);
 }
 
 function ajustaNomeCliente(e) {
@@ -97,17 +124,29 @@ function capitalizeFirstLetter(string) {
 
 
 function carregarDadosIniciais() {
-
   const selEmpresa = document.getElementById("empresa");
   selEmpresa.innerHTML = "";
   EMPRESAS_PADRAO.forEach((emp) => selEmpresa.add(new Option(emp, emp)));
 
   const selMensagem = document.getElementById("mensagem");
   selMensagem.innerHTML = "";
-  // ALTERADO: Agora usa 'msg.title' para o texto e 'msg.template' para o valor
-  MENSAGENS_PADRAO.forEach((msg) =>
-    selMensagem.add(new Option(msg.title, msg.id)),
-  );
+  mensagensPadrao.forEach((msg) => selMensagem.add(new Option(msg.title, msg.id)));
+}
+
+async function restaurarMensagensPadrao() {
+  localStorage.removeItem(STORAGE_KEY_MENSAGENS);
+  mensagensPadrao = await carregarMensagens();
+  carregarDadosIniciais();
+  atualizarPreviewMensagem();
+}
+
+function msgSelecionada() {
+  const msgSelId = document.getElementById("mensagem").value;
+  let template = mensagensPadrao.find((m) => m.id == msgSelId)?.template;
+  if (!template && mensagensPadrao.length > 0) {
+    template = mensagensPadrao[0].template;
+  }
+  return template || "";
 }
 
 function definirDDDPadrao() {
@@ -122,10 +161,8 @@ function carregarEntregadorSalvo() {
 }
 
 function carregarLetrasSalvo() {
-  const nome = localStorage.getItem(STORAGE_KEY_LETRA);
-  if (nome) {
-    document.getElementById("letras").value = nome;
-  }
+  const letra = localStorage.getItem(STORAGE_KEY_LETRA);
+  if (letra) document.getElementById("letras").value = letra;
 }
 
 function aplicarMascaraTelefone(elemento) {
@@ -164,8 +201,8 @@ function formataCodigo(e) {
 function buscarCliente() {
   limpaAlertaCodigoDuplicado();
   limpaFormDestinatario();
-  const codigoCompleto = padronizarCodigo();
-  if (codigoCompleto == "") return;
+  const codigoCompleto = padronizarCodigo(false); // false para não dar alert enquanto digita
+  if (codigoCompleto === "") return;
 
   const clientes = JSON.parse(localStorage.getItem(STORAGE_KEY_CLIENTES)) || {};
   const chaves = Object.keys(clientes);
@@ -174,7 +211,7 @@ function buscarCliente() {
   if (matches.length === 0) return null;
 
   if (matches.length > 1) {
-    alertaConflitoCodigp();
+    alertaConflitoCodigo(); // CORREÇÃO: Nome corrigido
     return null;
   }
   return clientes[matches[0]];
@@ -186,7 +223,39 @@ function preencherDadosCliente(cliente) {
   const numeroInput = document.getElementById("numero");
   numeroInput.value = cliente.tel;
   aplicarMascaraTelefone(numeroInput);
+
+  const codigo = padronizarCodigo(false);
+  reordenarSelectMensagens(codigo, cliente.msgEnviadas || []);
+
   atualizarPreviewMensagem();
+}
+
+function reordenarSelectMensagens(codigoCompleto, msgEnviadas = []) {
+  const selMensagem = document.getElementById("mensagem");
+  if (!selMensagem) return;
+
+  const enviadosSet = new Set(msgEnviadas.map(String));
+
+  const pendentes = mensagensPadrao.filter((m) => !enviadosSet.has(String(m.id)));
+  const enviadas = mensagensPadrao.filter((m) => enviadosSet.has(String(m.id)));
+
+  selMensagem.innerHTML = "";
+
+  pendentes.forEach((m) => {
+    selMensagem.add(new Option(m.title, m.id));
+  });
+
+  enviadas.forEach((m) => {
+    selMensagem.add(new Option(`✅ [Enviada] ${m.title}`, m.id));
+  });
+
+  if (pendentes.length > 0) {
+    selMensagem.selectedIndex = 0;
+  } else if (enviadas.length > 0) {
+    selMensagem.selectedIndex = 0;
+  }
+
+  selMensagem.dispatchEvent(new Event("change"));
 }
 
 function atualizarPreviewMensagem() {
@@ -195,17 +264,11 @@ function atualizarPreviewMensagem() {
   document.getElementById("messagePreview").textContent = textoFormatado;
 }
 
-function msgSelecionada() {
-  const msgSelId = document.getElementById("mensagem").value;
-  let template = MENSAGENS_PADRAO.find(m => m.id == msgSelId)?.template;
-  return template;
-}
-
 function limpaAlertaCodigoDuplicado() {
   const codigoInput = document.getElementById("codigo");
   codigoInput.classList.remove("conflito-codigo");
-  //el.classList.remove("conflito-codigo");
   const erro = document.getElementById("erro-codigo");
+  erro.classList.remove("error-text");
   erro.textContent = "";
 }
 
@@ -229,7 +292,7 @@ function enviarWhatsApp() {
   const ddd = document.getElementById("ddd").value.replace(/\D/g, "");
   const numero = document.getElementById("numero").value.replace(/\D/g, "");
   const nome = document.getElementById("nome").value.trim();
-  const codigo = padronizarCodigo();
+  const codigo = padronizarCodigo(true);
   const entregador = document.getElementById("entregador").value.trim();
 
   // Validação
@@ -238,9 +301,7 @@ function enviarWhatsApp() {
     return;
   }
   if (!codigo || !nome || ddd.length !== 2 || numero.length < 8) {
-    alert(
-      "Preencha todos os dados do destinatário: Código, Nome, DDD e Telefone válidos.",
-    );
+    alert("Preencha todos os dados do destinatário: Letra, Código, Nome, DDD e Telefone válidos.");
     return;
   }
 
@@ -252,65 +313,71 @@ function enviarWhatsApp() {
   window.open(link, "_blank");
 
   salvarDadosCliente(); 
-  limpaFormDestinatario(limparCode=true);
+  limpaFormDestinatario(true);
   document.getElementById("mensagem").selectedIndex = 0;
 }
 
 function salvarDadosCliente() {
-  // Pega o código e força a padronização antes de salvar
-  const codigo = padronizarCodigo();
-
+  const codigo = padronizarCodigo(false);
   const nome = document.getElementById("nome").value.trim();
   const tel = document.getElementById("numero").value.replace(/\D/g, "");
   const msgSelId = document.getElementById("mensagem").value;
-  let msgEnviadas = [msgSelId];
-  
+
   if (codigo && nome && tel.length >= 8) {
-    const clientes =
-      JSON.parse(localStorage.getItem(STORAGE_KEY_CLIENTES)) || {};
-    clientes[codigo] = { nome, tel, msgEnviadas };
+    const clientes = JSON.parse(localStorage.getItem(STORAGE_KEY_CLIENTES)) || {};
+    const clienteAtual = clientes[codigo] || { nome, tel, msgEnviadas: [] };
+
+    clienteAtual.nome = nome;
+    clienteAtual.tel = tel;
+
+    if (!Array.isArray(clienteAtual.msgEnviadas)) {
+      clienteAtual.msgEnviadas = [];
+    }
+
+    if (!clienteAtual.msgEnviadas.includes(msgSelId)) {
+      clienteAtual.msgEnviadas.push(msgSelId);
+    }
+
+    clientes[codigo] = clienteAtual;
     localStorage.setItem(STORAGE_KEY_CLIENTES, JSON.stringify(clientes));
   }
 }
 
 function limpaFormDestinatario(limparCode = false) {
-  let campos = limparCode? ["codigo","nome", "numero"] : ["nome", "numero"];
-  campos.forEach(
-    (id) => (document.getElementById(id).value = ""),
-  );
+  let campos = limparCode ?["codigo", "nome", "numero"] : ["nome", "numero"];
+  campos.forEach((id) => (document.getElementById(id).value = ""));
+
+  reordenarSelectMensagens();
   atualizarPreviewMensagem();
 }
 
 function limparHistoricoClientes() {
-  if (
-    confirm(
-      "Tem certeza que deseja apagar todo o histórico de destinatários? Esta ação não pode ser desfeita.",
-    )
-  ) {
+  if (confirm("Tem certeza que deseja apagar todo o histórico de destinatários? Esta ação não pode ser desfeita.")) {
     localStorage.removeItem(STORAGE_KEY_CLIENTES);
-    // Limpa os campos na tela para refletir a exclusão
-    ["codigo", "nome", "numero"].forEach(
-      (id) => (document.getElementById(id).value = ""),
-    );
+    ["codigo", "nome", "numero", "letras"].forEach((id) => (document.getElementById(id).value = ""));
+    reordenarSelectMensagens();
+    atualizarPreviewMensagem();
     alert("Histórico de clientes apagado com sucesso!");
   }
 }
 
-function padronizarCodigo() {
+function padronizarCodigo(alertLetras=false) {
   let codigo = document.getElementById("codigo").value;
   if (!codigo) return "";
 
   let letra = document.getElementById("letras").value;
-  if (!letra || letra.length == 0) {
-    alert("Informe a Letra de sua Rota");
+  if (!letra || letra.trim().length === 0) {
+    if(alertLetras)alert("Informe a Letra de sua Rota");
     return;
   }
   return `${letra}-${codigo}`;
 }
 
-function alertaConflitoCodigp(e) {
-  //e.target.classList.add("conflito-codigo");
-  // const el = document.getElementById("erro-codigo") //.
-  // el.classList.add("error-text")
-  // el.textContent = "Múltiplos pacotes. Digite a letra da rota.";
+function alertaConflitoCodigo() {
+  const input = document.getElementById("codigo");
+  input.classList.add("conflito-codigo");
+  
+  const el = document.getElementById("erro-codigo");
+  el.classList.add("error-text");
+  el.textContent = "Múltiplos pacotes. Digite a letra da rota.";
 }

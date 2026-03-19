@@ -1,5 +1,54 @@
-[
-    "Olá {nome}, o seu pedido da {empresa} já está a caminho!",
-    "Olá {nome}, o seu pedido da {empresa} (Cód: {codigo}) chegou ao destino e aguarda você vir buscar!",
-    "Oi {nome}! Sou entregador da {empresa}. Estou aqui na porta com o pacote {codigo}."
-]
+{
+  "mensagens_padrao": [
+    {
+      "id": 1,
+      "title": "Previsão de Rota do Dia",
+      "template": "Olá {nome}! Sou {entregador}, parceiro da {empresa}. Seu pacote está na minha rota! Minha previsão de chegada aí é por volta das {hora}. Terá alguém no local para receber?"
+    },
+    {
+      "id": 2,
+      "title": "Estou a Caminho (Próxima Parada)",
+      "template": "Oi {nome}, você é minha próxima parada! Chego no seu endereço em cerca de 10 minutinhos. Já pode deixar alguém avisado para agilizar a entrega, por favor? 🚚"
+    },
+    {
+      "id": 3,
+      "title": "Cheguei no Endereço",
+      "template": "Oi {nome}, cheguei! Estou aqui na frente do seu endereço aguardando. Pode vir retirar o pacote, por favor?"
+    },
+    {
+      "id": 4,
+      "title": "Dificuldade de Localização",
+      "template": "Oi {nome}, estou na sua rua, mas não achei a sua numeração exata. Pode me mandar a localização do WhatsApp ou um ponto de referência rápido?"
+    },
+    {
+      "id": 5,
+      "title": "Confirmação de Complemento (Dados Faltando)",
+      "template": "Oi {nome}! Fui organizar sua entrega e vi que falta o número do apartamento, casa ou bloco no sistema. Pode me confirmar essa informação rapidinho para eu não pular sua entrega?"
+    },
+    {
+      "id": 6,
+      "title": "Aviso de Senha/Palavra-chave",
+      "template": "Oi {nome}, para liberar esse pacote o sistema pede a palavra-passe ou os últimos números do seu CPF. Já deixa separado ou avisa quem for receber na porta pra gente agilizar, tá bom?"
+    },
+    {
+      "id": 7,
+      "title": "Ponto de Encontro (Rua Viela/Difícil Acesso)",
+      "template": "Oi {nome}, o veículo não consegue acessar até a porta do seu endereço. Consegue me encontrar aqui na rua principal/esquina nos próximos 5 minutinhos para eu te entregar em mãos?"
+    },
+    {
+      "id": 8,
+      "title": "Ninguém Atende (Buscando Alternativa)",
+      "template": "{nome}, estou batendo aqui na sua porta, mas ninguém atendeu. Posso deixar com algum vizinho de confiança ou comércio próximo? Como a rota é corrida, só consigo aguardar mais uns 3 minutinhos."
+    },
+    {
+      "id": 9,
+      "title": "Pacote Entregue a Terceiro",
+      "template": "Oi {nome}! Como não encontrei ninguém em casa, deixei sua encomenda com seu vizinho(a) / na portaria. Obrigado e um ótimo dia!"
+    },
+    {
+      "id": 10,
+      "title": "Última Tentativa (Evitando Devolução)",
+      "template": "Oi {nome}, tentei entregar seu pedido mais cedo e não consegui. Estou finalizando minha rota no seu bairro agora. Tem alguém aí pra receber se eu passar novamente? Se não, infelizmente o pacote retorna para a base hoje."
+    }
+  ]
+}

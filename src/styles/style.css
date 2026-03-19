@@ -1,4 +1,8 @@
 :root {
+    --bg-danger: #f31;
+    --bg-danger-dark: rgb(177, 35, 10);
+    --bg-alert: #d8cc25;
+    --bg-alert-dark: #8c8012;
     --wa-green: #25D366;
     --wa-dark: #128C7E;
     --bg-color: #ECE5DD;
@@ -58,6 +62,75 @@ body {
 
 .form-group { margin-bottom: 15px; }
 .form-group:last-child { margin-bottom: 0; }
+
+.mensagem-label-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+.mensagem-label-group label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 0;
+    white-space: nowrap;
+}
+
+.btn-icon {
+    background: none;
+    border: 1px solid #e0e0e0;
+    color: #444;
+    border-radius: 6px;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s;
+}
+.btn-icon:hover {
+    border-color: var(--wa-green);
+    color: var(--wa-dark);
+}
+
+.placeholder-button {
+    background: #f9f9f9;
+    border: 1px solid #d0d0d0;
+    border-radius: 8px;
+    color: #555;
+    padding: 6px 12px;
+    min-width: 75px;
+    text-align: center;
+    font-size: 12px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.placeholder-button:hover {
+    background: #fff;
+    border-color: var(--wa-green);
+    color: var(--wa-dark);
+}
+
+.modal-header-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.modal-label {
+    white-space: nowrap;
+    font-weight: 600;
+}
+
+#modal-titulo-group,
+#modal-seletor-group {
+    width: 100%;
+}
+
 
 .half-width { flex: 1; }
 .codigo-group {display: flex; gap: 3px; }
@@ -144,4 +217,154 @@ input.conflito-codigo {
     font-size: 11px;
     margin-top: 4px;
     min-height: 14px; 
+}
+
+.dialog-editor {
+    width: min(100%, 440px);
+    border: 1px solid #e0e0e0;
+    border-radius: 16px;
+    padding: 18px;
+    background-color: #fff;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    margin: 5% auto 0 auto;
+    position: relative;
+}
+
+dialog::backdrop {
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.dialog-editor #form-editor {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.dialog-editor h3 {
+    font-size: 18px;
+    color: var(--wa-dark);
+    margin-bottom: 8px;
+}
+
+.dialog-editor .form-group {
+    margin-bottom: 12px;
+}
+
+.dialog-editor textarea,
+.dialog-editor select,
+.dialog-editor input[type="text"],
+.dialog-editor input[type="tel"] {
+    background-color: #fafafa;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 10px;
+    width: 100%;
+    font-size: 14px;
+    outline: none;
+    transition: 0.2s;
+}
+
+.dialog-editor textarea:focus,
+.dialog-editor select:focus,
+.dialog-editor input:focus {
+    border-color: var(--wa-green);
+    background-color: #fff;
+}
+
+.dialog-editor menu {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.placeholder-container {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+}
+
+.placeholder-button {
+    margin-top: 2px;
+    padding: 8px 12px;
+    min-width: 80px;
+    text-align: center;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    background-color: #fafafa;
+    cursor: pointer;
+    transition: 0.2s;
+    font-size: 12px;
+}
+
+.placeholder-button:hover {
+    border-color: var(--wa-dark);
+    background-color: #fff;
+}
+
+.btn-secondary {
+    padding: 8px 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background: #fff;
+    color: #444;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-secondary:hover {
+    border-color: var(--wa-green);
+    color: var(--wa-dark);
+}
+
+
+.editor-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.dialog-editor button {
+    padding: 10px 14px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background: #fff;
+    color: #444;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.dialog-editor button:hover {
+    border-color: var(--wa-green);
+    color: var(--wa-dark);
+}
+
+.dialog-editor .btn-alterar {
+    background: var(--bg-alert);
+    color: #fff;
+}
+
+.dialog-editor .btn-alterar:hover {
+    border-color: var(--bg-alert-dark);
+}
+.dialog-editor .btn-excluir {
+    background: var(--bg-danger);
+    color: #fff;
+}
+
+.dialog-editor .btn-excluir:hover {
+    border-color: var(--bg-danger-dark);
+}
+
+.dialog-editor #btn-salvar-editor {
+    background-color: var(--wa-green);
+    color: #fff;
+    border-color: var(--wa-green);
+}
+
+.dialog-editor #btn-salvar-editor:hover {
+    background-color: var(--wa-dark);
+    border-color: var(--wa-dark);
 }
